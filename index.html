@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="고민은 줄이고 맛있게! 카테고리를 골라 돌리는 점심 메뉴 룰렛">
+<meta name="description" content="카테고리 하나를 골라 돌리는 귀여운 점심 메뉴 룰렛">
 <title>점심 뭐 먹지? · 메뉴 룰렛</title>
 <style>
 :root {
@@ -21,13 +21,13 @@ body {
     radial-gradient(circle at 95% 70%, #ffd6dc66, transparent 24rem),
     #fff9ed;
 }
-button { font: inherit; -webkit-tap-highlight-color: transparent; }
-button:focus-visible, a:focus-visible, summary:focus-visible {
+button, input { font: inherit; }
+button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+button:disabled { cursor: default; }
+button:focus-visible, summary:focus-visible {
   outline: 3px solid #6d56c3;
   outline-offset: 5px;
 }
-button { cursor: pointer; }
-button:disabled { cursor: default; }
 [hidden] { display: none !important; }
 main { max-width: 1000px; margin: auto; padding: 28px 24px 40px; }
 header {
@@ -47,20 +47,42 @@ header {
   font-size: 11px;
 }
 .intro { text-align: center; padding: 38px 0 26px; }
-.eyebrow { color: #a1794b; font-size: 11px; font-weight: 800; letter-spacing: 2px; }
-h1 { font-size: clamp(32px, 6vw, 46px); margin: 10px 0; letter-spacing: -2px; }
+.eyebrow {
+  color: #a1794b;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+h1 {
+  font-size: clamp(32px, 6vw, 46px);
+  margin: 10px 0;
+  letter-spacing: -2px;
+}
 h1 span { color: #e36d54; }
-.intro > p:last-child { margin: 0; font-size: 14px; color: #8a7b68; line-height: 1.7; }
-.layout { display: grid; grid-template-columns: 1.12fr 1fr; gap: 24px; align-items: center; }
+.intro > p:last-child {
+  margin: 0;
+  font-size: 14px;
+  color: #8a7b68;
+  line-height: 1.7;
+}
+.layout {
+  display: grid;
+  grid-template-columns: 1.12fr 1fr;
+  gap: 24px;
+  align-items: center;
+}
 .wheel-card {
-  position: relative;
   background: #fffdf7;
   border: 1px solid #efe2ca;
   border-radius: 32px;
   padding: 32px 20px 23px;
   box-shadow: 0 14px 36px #8165420b;
 }
-.wheel-wrap { position: relative; width: min(100%, 420px); margin: auto; }
+.wheel-wrap {
+  position: relative;
+  width: min(100%, 420px);
+  margin: auto;
+}
 .wheel-frame {
   padding: 10px;
   border-radius: 50%;
@@ -85,7 +107,6 @@ canvas {
   transform: translateX(-50%);
   background: #544337;
   clip-path: polygon(0 0, 100% 0, 50% 100%);
-  filter: drop-shadow(0 2px 2px #0002);
 }
 .hub {
   position: absolute;
@@ -103,15 +124,57 @@ canvas {
   box-shadow: 0 4px 0 #00000010;
   pointer-events: none;
 }
-.wheel-caption { text-align: center; color: #9b8a73; font-size: 11px; margin: 20px 0 0; }
+.wheel-caption {
+  text-align: center;
+  color: #9b8a73;
+  font-size: 11px;
+  margin: 20px 0 0;
+}
 .control-card { padding: 10px 0; }
-.step { font-size: 11px; font-weight: 800; color: #b49368; letter-spacing: 1px; margin: 0 0 8px; }
+.step {
+  font-size: 11px;
+  font-weight: 800;
+  color: #b49368;
+  letter-spacing: 1px;
+  margin: 0 0 8px;
+}
 h2 { font-size: 22px; letter-spacing: -.8px; margin: 0; }
-.helper { font-size: 12px; color: #8b7c69; margin: 8px 0 17px; line-height: 1.6; }
-.categories { display: flex; flex-wrap: wrap; gap: 9px; }
-.category {
+.helper {
+  font-size: 12px;
+  color: #8b7c69;
+  margin: 8px 0 17px;
+  line-height: 1.6;
+}
+.categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.category { position: relative; cursor: pointer; }
+.category input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+.category-label {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   padding: 11px 15px;
   border: 2px solid transparent;
@@ -122,13 +185,21 @@ h2 { font-size: 22px; letter-spacing: -.8px; margin: 0; }
   font-weight: 800;
   transition: transform .15s, background .15s;
 }
-.category:hover:not(:disabled) { transform: translateY(-2px); }
-.category[aria-pressed="true"] {
+.category:hover .category-label { transform: translateY(-2px); }
+.category input:checked + .category-label {
   background: var(--color);
   color: #493b30;
   border-color: #493b3060;
 }
-.category:disabled { opacity: .7; }
+.category input:focus-visible + .category-label {
+  outline: 3px solid #6d56c3;
+  outline-offset: 4px;
+}
+.category input:disabled + .category-label {
+  opacity: .65;
+  cursor: default;
+  transform: none;
+}
 .check {
   display: grid;
   place-items: center;
@@ -136,20 +207,11 @@ h2 { font-size: 22px; letter-spacing: -.8px; margin: 0; }
   height: 16px;
   border-radius: 50%;
   background: #ffffffb3;
+  color: transparent;
   font-size: 11px;
 }
-.category[aria-pressed="false"] .check { color: transparent; }
-.selection-row { display: flex; align-items: center; justify-content: space-between; margin: 13px 0 20px; gap: 10px; }
-#selection-info { color: #8d7d68; font-size: 11px; margin: 0; }
-.select-all {
-  padding: 4px 0;
-  border: 0;
-  background: transparent;
-  color: #8c6948;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  font-size: 11px;
-}
+.category input:checked + .category-label .check { color: #493b30; }
+#selection-info { color: #8d7d68; font-size: 11px; margin: 14px 0 20px; }
 .spin-button {
   display: block;
   width: 100%;
@@ -164,11 +226,25 @@ h2 { font-size: 22px; letter-spacing: -.8px; margin: 0; }
   transition: transform .15s, box-shadow .15s;
 }
 .spin-button:hover:not(:disabled) { background: #ffd580; }
-.spin-button:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 1px 0 #544337; }
-.spin-button:disabled { background: #eee5d6; color: #998a78; border-color: #c6b9a5; box-shadow: 0 5px 0 #c6b9a5; }
-#status { min-height: 20px; font-size: 12px; line-height: 1.7; color: #8c7156; margin: 16px 0 0; text-align: center; }
+.spin-button:active:not(:disabled) {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 #544337;
+}
+.spin-button:disabled {
+  background: #eee5d6;
+  color: #998a78;
+  border-color: #c6b9a5;
+  box-shadow: 0 5px 0 #c6b9a5;
+}
+#status {
+  min-height: 20px;
+  font-size: 12px;
+  line-height: 1.7;
+  color: #8c7156;
+  margin: 16px 0 0;
+  text-align: center;
+}
 .result {
-  position: relative;
   margin-top: 19px;
   padding: 24px 20px;
   text-align: center;
@@ -177,18 +253,60 @@ h2 { font-size: 22px; letter-spacing: -.8px; margin: 0; }
   background: #ffffffb3;
   overflow: hidden;
 }
-.result-label { color: #a58a66; font-size: 10px; font-weight: 800; letter-spacing: 2px; margin: 0 0 10px; }
+.result-label {
+  color: #a58a66;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  margin: 0 0 10px;
+}
 .result-emoji { font-size: 34px; margin: 0 0 5px; }
-.result-category { display: inline-block; padding: 4px 11px; border-radius: 20px; font-size: 11px; font-weight: 800; background: #f4e9d8; }
-.result h3 { font-size: clamp(26px, 4vw, 34px); letter-spacing: -1px; margin: 10px 0 5px; }
+.result-category {
+  display: inline-block;
+  padding: 4px 11px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 800;
+  background: #f4e9d8;
+}
+.result h3 {
+  font-size: clamp(26px, 4vw, 34px);
+  letter-spacing: -1px;
+  margin: 10px 0 5px;
+}
 .result-description { color: #9a8871; font-size: 12px; margin: 0; }
 .result.pop { animation: pop .4s ease-out; }
-details { border-top: 1px dashed #dfd2ba; margin-top: 38px; padding-top: 19px; }
+details {
+  border-top: 1px dashed #dfd2ba;
+  margin-top: 38px;
+  padding-top: 19px;
+}
 summary { cursor: pointer; font-size: 12px; color: #8f7c63; }
-.menu-list { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding-top: 16px; }
-.menu-group { padding: 13px; border-radius: 15px; background: #ffffff99; font-size: 11px; color: #8b7961; line-height: 1.9; }
+.menu-list {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  padding-top: 16px;
+}
+.menu-group {
+  padding: 13px;
+  border: 1px solid transparent;
+  border-radius: 15px;
+  background: #ffffff99;
+  font-size: 11px;
+  color: #8b7961;
+  line-height: 1.9;
+}
+.menu-group.active { border-color: #c5a77b; background: #fff; }
 .menu-group strong { display: block; color: #594534; margin-bottom: 4px; }
-footer { text-align: center; color: #a28f75; font-size: 10px; padding-top: 26px; line-height: 1.8; }
+.menu-group ul { padding-left: 16px; margin: 0; }
+footer {
+  text-align: center;
+  color: #a28f75;
+  font-size: 10px;
+  padding-top: 26px;
+  line-height: 1.8;
+}
 @keyframes pop {
   0% { transform: scale(.96); }
   65% { transform: scale(1.025); }
@@ -202,11 +320,15 @@ footer { text-align: center; color: #a28f75; font-size: 10px; padding-top: 26px;
   .wheel-wrap { max-width: 350px; }
   .control-card { padding: 0; }
   .menu-list { grid-template-columns: repeat(2, 1fr); }
-  .category { flex: 1 0 27%; justify-content: center; padding: 10px 8px; }
+  .category { flex: 1 0 27%; }
+  .category-label { padding: 10px 8px; }
   .hub { width: 57px; height: 57px; font-size: 25px; }
 }
 @media(prefers-reduced-motion:reduce) {
-  *, *::before, *::after { animation: none !important; transition: none !important; }
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }
 </style>
 </head>
@@ -220,7 +342,7 @@ footer { text-align: center; color: #a28f75; font-size: 10px; padding-top: 26px;
   <section class="intro">
     <p class="eyebrow">LUNCH PICKER</p>
     <h1>고민은 그만, <span>맛있게 돌려!</span></h1>
-    <p>먹고 싶은 종류만 골라주세요.<br>오늘의 점심은 룰렛이 정해드릴게요.</p>
+    <p>먹고 싶은 종류 하나만 골라주세요.<br>오늘의 점심은 룰렛이 정해드릴게요.</p>
   </section>
 
   <div class="layout">
@@ -228,11 +350,11 @@ footer { text-align: center; color: #a28f75; font-size: 10px; padding-top: 26px;
       <div class="wheel-wrap">
         <div class="pointer" aria-hidden="true"></div>
         <div class="wheel-frame">
-          <canvas id="wheel" width="800" height="800" aria-label="선택한 카테고리의 메뉴가 표시되는 룰렛">
+          <canvas id="wheel" width="800" height="800" aria-label="한식 메뉴 룰렛">
             메뉴 목록은 페이지 아래의 ‘어떤 메뉴가 있나요?’에서 확인할 수 있습니다.
           </canvas>
         </div>
-        <div class="hub" aria-hidden="true">🍴</div>
+        <div id="hub" class="hub" aria-hidden="true">🍚</div>
       </div>
       <p class="wheel-caption">위쪽 화살표가 가리키는 메뉴가 오늘의 점심!</p>
     </section>
@@ -240,16 +362,15 @@ footer { text-align: center; color: #a28f75; font-size: 10px; padding-top: 26px;
     <section class="control-card" aria-labelledby="category-title">
       <p class="step">STEP 01 · 취향 고르기</p>
       <h2 id="category-title">오늘은 어떤 종류가 좋아요?</h2>
-      <p class="helper">여러 개를 골라도 좋아요. 처음에는 모두 선택돼 있어요.</p>
+      <p class="helper">카테고리 하나를 선택하세요. 각 카테고리에 메뉴가 12개씩 있어요.</p>
 
-      <div id="categories" class="categories" role="group" aria-label="음식 카테고리 선택"></div>
+      <fieldset id="categories" class="categories">
+        <legend class="sr-only">음식 카테고리 하나 선택</legend>
+      </fieldset>
 
-      <div class="selection-row">
-        <p id="selection-info"></p>
-        <button id="select-all" class="select-all" type="button">전체 해제</button>
-      </div>
+      <p id="selection-info"></p>
 
-      <button id="spin" class="spin-button" type="button">오늘의 점심 돌리기 ↻</button>
+      <button id="spin" class="spin-button" type="button">한식 메뉴 돌리기 ↻</button>
       <p id="status" role="status" aria-live="polite">준비됐나요? 맛있는 선택을 시작해요.</p>
 
       <section id="result" class="result" aria-labelledby="result-title">
@@ -263,13 +384,14 @@ footer { text-align: center; color: #a28f75; font-size: 10px; padding-top: 26px;
   </div>
 
   <details>
-    <summary>어떤 메뉴가 있나요?</summary>
+    <summary>어떤 메뉴가 있나요? · 총 60개</summary>
     <div id="menu-list" class="menu-list"></div>
   </details>
 
   <footer>
     외부 API · AI · 로그인 없이, 브라우저에서만 작동해요.<br>
-    선택한 카테고리의 모든 메뉴는 같은 확률로 뽑힙니다. 같은 메뉴가 다시 나올 수도 있어요.
+    선택한 카테고리 안의 모든 메뉴는 같은 확률로 뽑힙니다.<br>
+    같은 메뉴가 다시 나올 수도 있어요.
   </footer>
 
   <noscript>룰렛을 사용하려면 브라우저에서 JavaScript를 활성화해 주세요.</noscript>
@@ -278,66 +400,77 @@ footer { text-align: center; color: #a28f75; font-size: 10px; padding-top: 26px;
 <script>
 "use strict";
 
-/*
-  메뉴를 바꾸고 싶다면 아래 items 목록을 수정하세요.
-  카테고리별 메뉴 수가 달라도 각 메뉴의 추첨 확률은 같습니다.
-*/
+/* 메뉴를 바꾸려면 각 카테고리의 items 목록을 수정하세요. */
 const menuData = [
   {
     name: "한식",
     emoji: "🍚",
     color: "#FFD68C",
-    items: ["김치찌개", "비빔밥", "불고기", "제육볶음"]
+    shades: ["#FFD68C", "#FFE7B7", "#F7C578"],
+    items: [
+      "김치찌개", "된장찌개", "순두부찌개", "비빔밥",
+      "불고기", "제육볶음", "삼겹살", "돼지국밥",
+      "냉면", "칼국수", "닭갈비", "설렁탕"
+    ]
   },
   {
     name: "중식",
     emoji: "🥟",
     color: "#FFB9AC",
-    items: ["짜장면", "짬뽕", "볶음밥", "마파두부"]
+    shades: ["#FFB9AC", "#FFD8CE", "#F5AA9C"],
+    items: [
+      "짜장면", "짬뽕", "간짜장", "볶음밥",
+      "마파두부", "잡채밥", "고추잡채", "탕수육",
+      "마라탕", "마라샹궈", "유산슬", "기스면"
+    ]
   },
   {
     name: "일식",
     emoji: "🍣",
     color: "#BCE0D1",
-    items: ["초밥", "돈카츠", "우동", "규동"]
+    shades: ["#BCE0D1", "#DCF0E5", "#AAD4C2"],
+    items: [
+      "초밥", "돈카츠", "우동", "규동",
+      "가츠동", "사케동", "텐동", "소바",
+      "일본식 카레", "라멘", "오야코동", "야키소바"
+    ]
   },
   {
     name: "양식",
     emoji: "🍝",
     color: "#CFC8F0",
-    items: ["파스타", "피자", "햄버거", "리소토"]
+    shades: ["#CFC8F0", "#E6E0FA", "#BFB6E8"],
+    items: [
+      "토마토 파스타", "크림 파스타", "알리오올리오",
+      "피자", "햄버거", "리소토",
+      "스테이크", "샌드위치", "라자냐",
+      "오믈렛", "뇨키", "치킨 샐러드"
+    ]
   },
   {
     name: "분식",
     emoji: "🍜",
     color: "#F7CBDF",
-    items: ["떡볶이", "김밥", "라면", "쫄면"]
+    shades: ["#F7CBDF", "#FCE3ED", "#EDB7D0"],
+    items: [
+      "떡볶이", "김밥", "라면", "쫄면",
+      "라볶이", "순대", "튀김", "잔치국수",
+      "비빔국수", "떡국", "떡만둣국", "쫄볶이"
+    ]
   }
 ];
 
 const el = id => document.getElementById(id);
 const canvas = el("wheel");
 const ctx = canvas.getContext("2d");
-const selected = new Set(menuData.map(category => category.name));
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-let pool = [];
+let selectedCategory = menuData[0];
 let spinning = false;
 let rotation = 0;
 let completionTimer = null;
 let activeFinish = null;
 let previousWinner = null;
-
-function buildPool() {
-  return menuData
-    .filter(category => selected.has(category.name))
-    .flatMap(category => category.items.map(menu => ({
-      menu,
-      category: category.name,
-      emoji: category.emoji,
-      color: category.color
-    })));
-}
 
 function drawWheel() {
   if (!ctx) return;
@@ -345,25 +478,12 @@ function drawWheel() {
   const size = canvas.width;
   const center = size / 2;
   const radius = center - 3;
+  const items = selectedCategory.items;
+  const step = Math.PI * 2 / items.length;
 
   ctx.clearRect(0, 0, size, size);
 
-  if (!pool.length) {
-    ctx.beginPath();
-    ctx.arc(center, center, radius, 0, Math.PI * 2);
-    ctx.fillStyle = "#EFE6D7";
-    ctx.fill();
-
-    ctx.fillStyle = "#95836C";
-    ctx.textAlign = "center";
-    ctx.font = "700 32px system-ui, sans-serif";
-    ctx.fillText("카테고리를 골라주세요", center, center - 95);
-    return;
-  }
-
-  const step = Math.PI * 2 / pool.length;
-
-  pool.forEach((item, index) => {
+  items.forEach((menu, index) => {
     const start = -Math.PI / 2 + index * step;
     const end = start + step;
 
@@ -371,10 +491,11 @@ function drawWheel() {
     ctx.moveTo(center, center);
     ctx.arc(center, center, radius, start, end);
     ctx.closePath();
-    ctx.fillStyle = item.color;
+
+    ctx.fillStyle = selectedCategory.shades[index % selectedCategory.shades.length];
     ctx.fill();
     ctx.strokeStyle = "#FFFDF5";
-    ctx.lineWidth = 3;
+    ctx.lineWidth = 4;
     ctx.stroke();
 
     ctx.save();
@@ -384,8 +505,8 @@ function drawWheel() {
     ctx.textAlign = "right";
     ctx.textBaseline = "middle";
     ctx.fillStyle = "#493B30";
-    ctx.font = "800 26px system-ui, sans-serif";
-    ctx.fillText(item.menu, radius - 27, 0, radius - 115);
+    ctx.font = "800 28px system-ui, sans-serif";
+    ctx.fillText(menu, radius - 28, 0, radius - 120);
 
     ctx.restore();
   });
@@ -401,57 +522,61 @@ function clearResult() {
   previousWinner = null;
   el("result").classList.remove("pop");
   el("result-emoji").textContent = "🥄";
-  el("result-category").textContent = "두근두근";
-  el("result-category").style.background = "#F4E9D8";
+  el("result-category").textContent = selectedCategory.name;
+  el("result-category").style.background = selectedCategory.color;
   el("result-title").textContent = "오늘의 메뉴는?";
-  el("result-description").textContent = "룰렛을 돌리면 여기에 알려드릴게요.";
+  el("result-description").textContent =
+    `${selectedCategory.name} 메뉴 중에서 골라드릴게요.`;
 }
 
-function updateSelection() {
-  pool = buildPool();
-
-  document.querySelectorAll(".category").forEach(button => {
-    button.setAttribute("aria-pressed", String(selected.has(button.dataset.category)));
-    button.disabled = spinning;
+function updateControls() {
+  document.querySelectorAll('input[name="category"]').forEach(input => {
+    input.checked = input.value === selectedCategory.name;
+    input.disabled = spinning;
   });
 
-  el("select-all").disabled = spinning;
-  el("select-all").textContent =
-    selected.size === menuData.length ? "전체 해제" : "전체 선택";
+  document.querySelectorAll(".menu-group").forEach(group => {
+    group.classList.toggle(
+      "active",
+      group.dataset.category === selectedCategory.name
+    );
+  });
 
+  el("hub").textContent = selectedCategory.emoji;
   el("selection-info").textContent =
-    `${selected.size}개 카테고리 · ${pool.length}개 메뉴`;
+    `${selectedCategory.emoji} ${selectedCategory.name} 선택 · ${selectedCategory.items.length}개 메뉴`;
 
-  el("spin").disabled = spinning || !pool.length || !ctx;
+  el("spin").disabled = spinning || !ctx;
   el("spin").textContent = spinning
     ? "맛있는 메뉴 고르는 중…"
-    : previousWinner ? "한 번 더 돌리기 ↻" : "오늘의 점심 돌리기 ↻";
+    : previousWinner
+      ? `${selectedCategory.name} 한 번 더 돌리기 ↻`
+      : `${selectedCategory.name} 메뉴 돌리기 ↻`;
 
   canvas.setAttribute(
     "aria-label",
-    pool.length
-      ? `선택된 ${pool.length}개 메뉴의 룰렛. 결과는 돌린 뒤 안내됩니다.`
-      : "카테고리를 선택하면 메뉴가 표시됩니다."
+    `${selectedCategory.name} ${selectedCategory.items.length}개 메뉴의 룰렛. 결과는 돌린 뒤 안내됩니다.`
   );
 }
 
-function changeSelection() {
-  if (spinning) return;
+function changeCategory(category) {
+  if (spinning || selectedCategory === category) return;
 
-  clearResult();
+  selectedCategory = category;
   rotation = 0;
+
   canvas.style.transition = "none";
   canvas.style.transform = "rotate(0deg)";
 
-  updateSelection();
+  clearResult();
+  updateControls();
   drawWheel();
 
-  el("status").textContent = pool.length
-    ? "좋아요! 선택한 메뉴 안에서 골라드릴게요."
-    : "카테고리를 하나 이상 선택해 주세요.";
+  el("status").textContent =
+    `${category.name} 메뉴를 골랐어요. 룰렛을 돌려보세요!`;
 }
 
-/* 지원되는 브라우저에서는 암호학적 난수를 사용합니다. */
+/* 각 메뉴를 동일한 확률로 선택합니다. */
 function randomIndex(length) {
   if (!window.crypto?.getRandomValues) {
     return Math.floor(Math.random() * length);
@@ -468,34 +593,34 @@ function randomIndex(length) {
   return values[0] % length;
 }
 
-function showWinner(winner) {
+function showWinner(winner, category) {
   previousWinner = winner;
 
-  el("result-emoji").textContent = winner.emoji;
-  el("result-category").textContent = winner.category;
-  el("result-category").style.background = winner.color;
-  el("result-title").textContent = winner.menu;
-  el("result-description").textContent = "오늘 점심은 이걸로 어때요? 맛있게 드세요!";
+  el("result-emoji").textContent = category.emoji;
+  el("result-category").textContent = category.name;
+  el("result-category").style.background = category.color;
+  el("result-title").textContent = winner;
+  el("result-description").textContent =
+    "오늘 점심은 이걸로 어때요? 맛있게 드세요!";
 
   el("result").classList.remove("pop");
   void el("result").offsetWidth;
   el("result").classList.add("pop");
 
   el("status").textContent =
-    `오늘의 점심은 ${winner.category}, ${winner.menu}입니다! 다시 돌릴 수도 있어요.`;
+    `오늘의 점심은 ${category.name}, ${winner}입니다! 다시 돌릴 수도 있어요.`;
 }
 
 function spin() {
-  if (spinning || !pool.length || !ctx) return;
+  if (spinning || !ctx) return;
 
-  const index = randomIndex(pool.length);
-  const winner = pool[index];
-  const slice = 360 / pool.length;
+  const category = selectedCategory;
+  const items = category.items;
+  const index = randomIndex(items.length);
+  const winner = items[index];
+  const slice = 360 / items.length;
 
-  /*
-    캔버스의 첫 조각은 12시부터 시작합니다.
-    당첨 조각의 중앙을 12시 화살표 아래로 이동합니다.
-  */
+  /* 당첨 조각의 중앙이 12시 화살표에 오도록 회전합니다. */
   const targetAngle = (360 - (index + 0.5) * slice) % 360;
   const currentAngle = ((rotation % 360) + 360) % 360;
   const extraAngle = (targetAngle - currentAngle + 360) % 360;
@@ -506,13 +631,16 @@ function spin() {
 
   el("result").classList.remove("pop");
   el("result-emoji").textContent = "🍽️";
-  el("result-category").textContent = "고르는 중";
-  el("result-category").style.background = "#F4E9D8";
+  el("result-category").textContent = category.name;
+  el("result-category").style.background = category.color;
   el("result-title").textContent = "뭐가 나올까요?";
-  el("result-description").textContent = "맛있는 운명을 기다리는 중이에요.";
-  el("status").textContent = "룰렛을 돌리고 있어요. 잠시만 기다려 주세요.";
+  el("result-description").textContent =
+    `${category.name} 메뉴 중에서 고르고 있어요.`;
 
-  updateSelection();
+  el("status").textContent =
+    "룰렛을 돌리고 있어요. 잠시만 기다려 주세요.";
+
+  updateControls();
 
   let completed = false;
 
@@ -524,9 +652,13 @@ function spin() {
     canvas.removeEventListener("transitionend", onTransitionEnd);
     activeFinish = null;
 
+    /* 애니메이션 이벤트가 누락돼도 최종 위치를 확정합니다. */
+    canvas.style.transition = "none";
+    canvas.style.transform = `rotate(${rotation}deg)`;
+
     spinning = false;
-    showWinner(winner);
-    updateSelection();
+    showWinner(winner, category);
+    updateControls();
   };
 
   const onTransitionEnd = event => {
@@ -542,79 +674,75 @@ function spin() {
     ? `transform ${duration}ms cubic-bezier(.12,.75,.12,1)`
     : "none";
 
-  /* 앞선 회전 상태를 확정한 뒤 다음 회전을 시작합니다. */
   void canvas.offsetWidth;
   canvas.style.transform = `rotate(${rotation}deg)`;
 
   completionTimer = setTimeout(finish, duration + 150);
 }
 
-/* 카테고리 버튼과 메뉴 안내를 만듭니다. */
+/* 카테고리별 라디오 버튼과 전체 메뉴 안내를 만듭니다. */
 menuData.forEach(category => {
-  const button = document.createElement("button");
-  button.type = "button";
-  button.className = "category";
-  button.dataset.category = category.name;
-  button.style.setProperty("--color", category.color);
-  button.setAttribute("aria-pressed", "true");
+  const label = document.createElement("label");
+  label.className = "category";
+  label.style.setProperty("--color", category.color);
+
+  const input = document.createElement("input");
+  input.type = "radio";
+  input.name = "category";
+  input.value = category.name;
+  input.checked = category === selectedCategory;
+
+  const face = document.createElement("span");
+  face.className = "category-label";
 
   const check = document.createElement("span");
   check.className = "check";
   check.setAttribute("aria-hidden", "true");
   check.textContent = "✓";
 
-  const label = document.createElement("span");
-  label.textContent = `${category.emoji} ${category.name}`;
+  const text = document.createElement("span");
+  text.textContent = `${category.emoji} ${category.name}`;
 
-  button.append(check, label);
+  face.append(check, text);
+  label.append(input, face);
 
-  button.addEventListener("click", () => {
-    if (spinning) return;
-
-    if (selected.has(category.name)) selected.delete(category.name);
-    else selected.add(category.name);
-
-    changeSelection();
+  input.addEventListener("change", () => {
+    if (input.checked) changeCategory(category);
   });
 
-  el("categories").append(button);
+  el("categories").append(label);
 
   const group = document.createElement("div");
   group.className = "menu-group";
+  group.dataset.category = category.name;
 
   const title = document.createElement("strong");
-  title.textContent = `${category.emoji} ${category.name}`;
+  title.textContent =
+    `${category.emoji} ${category.name} · ${category.items.length}개`;
 
-  const menuText = document.createElement("span");
-  menuText.textContent = category.items.join(" · ");
+  const list = document.createElement("ul");
 
-  group.append(title, menuText);
+  category.items.forEach(menu => {
+    const item = document.createElement("li");
+    item.textContent = menu;
+    list.append(item);
+  });
+
+  group.append(title, list);
   el("menu-list").append(group);
-});
-
-el("select-all").addEventListener("click", () => {
-  if (spinning) return;
-
-  if (selected.size === menuData.length) {
-    selected.clear();
-  } else {
-    menuData.forEach(category => selected.add(category.name));
-  }
-
-  changeSelection();
 });
 
 el("spin").addEventListener("click", spin);
 
-/* 회전 도중 움직임 줄이기를 켜면 애니메이션을 즉시 마칩니다. */
+/* 회전 도중 움직임 줄이기를 켜면 즉시 결과를 표시합니다. */
 reducedMotion.addEventListener?.("change", event => {
   if (event.matches && spinning && activeFinish) {
-    canvas.style.transition = "none";
     activeFinish();
   }
 });
 
-updateSelection();
+clearResult();
+updateControls();
 drawWheel();
 
 if (!ctx) {
